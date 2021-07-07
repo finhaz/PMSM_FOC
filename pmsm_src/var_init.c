@@ -12,16 +12,26 @@
 //参数更新
 void Paramet_Update(void)
 {
-//    if(speed_cankao<3000)
+    if(speed_cankao<6000)
+    {
+        kp_speed=0.04;
+        ki_speed=0.001;
+    }
+    else if(speed_cankao<7000)
+    {
+        kp_speed=0.2;
+        ki_speed=0.0001;
+    }
+//    else if(speed_cankao<7500)
 //    {
-//        Paramet[I_kp]=0.6;
-//        Paramet[I_ki]=0.0005;
+//        kp_speed=0.1;
+//        ki_speed=0.0001;
 //    }
-//    else if(speed_cankao<3000)
-//    {
-//        Paramet[I_kp]=0.108;
-//        Paramet[I_ki]=0.002;
-//    }
+    else if(speed_cankao<8300)
+    {
+        kp_speed=0.4;
+        ki_speed=0.00001;
+    }
 }
 
 //参数初始化
@@ -57,12 +67,6 @@ void Initparameter(void)
 
 
     //速度环参数
-
-//    kp_speed=0.04;
-//    ki_speed=0.001;
-
-//    kp_speed=0.002;
-//    ki_speed=0.0001;
 
     kp_speed=0.4;
     ki_speed=0.000001;
