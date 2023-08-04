@@ -10,8 +10,7 @@
 
 #include "includes.h"
 
-float te_anl[40];
-int i_te_anl=0;
+
 void encoder_solver(void)
 {
     Uint16 DirectionQep;
@@ -32,15 +31,6 @@ void encoder_solver(void)
         encoder_cal.Init_IFlag=1;
 
     }
-
-    if(EQep1Regs.QFLG.bit.IEL==1)
-    {
-        te_anl[i_te_anl]=encoder_cal.theta_mech;
-        i_te_anl++;
-        if(i_te_anl==40)
-            i_te_anl=0;
-    }
-
 
     if(tmp_theta<0)
         tmp_theta=tmp_theta+QPO_Pulse;

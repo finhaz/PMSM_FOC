@@ -7,18 +7,26 @@
 
 #include "includes.h"
 
-//20K
-#define Ls_by_T 14.75 //0.0007375H/0.00005
-#define rTbyL 0.0136//R*T/L=0.2*0.00005/0.0007375
-#define TbyL 0.0678//T/L=0.00005/0.0007375
-#define k1mT -1.7878//k1*T
-#define k2mT 11.9655//k2*T
+////20K
+//#define Ls_by_T 14.75 //0.0007375H/0.00005
+//#define rTbyL 0.0136//R*T/L=0.2*0.00005/0.0007375
+//#define TbyL 0.0678//T/L=0.00005/0.0007375
+//#define k1mT -1.7878//k1*T
+//#define k2mT 11.9655//k2*T
+
+
+//30K
+#define Ls_by_T 22.125 //0.0007375H/0.000033
+#define rTbyL 0.009//R*T/L=0.2*0.000033/0.00043
+#define TbyL 0.0452//T/L=0.000033/0.0007375
+#define k1mT -1.7919//k1*T
+#define k2mT 17.9393//k2*T
 
 
 ////40K
 //#define Ls_by_T 29.5 //0.0007375H/0.000025
 //#define rTbyL 0.0068//R*T/L=0.2*0.000025/0.00043
-//#define TbyL 0.0339//T/L=0.00007375/0.00043
+//#define TbyL 0.0339//T/L=0.000033/0.0007375
 //#define k1mT -1.7939//k1*T
 //#define k2mT 23.9130//k2*T
 

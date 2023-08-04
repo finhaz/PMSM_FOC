@@ -157,7 +157,8 @@ SECTIONS
    }
    */
 
-   FPUmathTables    : > FPUTABLES, PAGE = 0, TYPE = NOLOAD
+   //FPUmathTables    : > FPUTABLES, PAGE = 0, TYPE = NOLOAD
+   FPUmathTables    : > RAMLP, PAGE = 0
 
    DMARAML4         : > RAMLD,     PAGE = 1
    DMARAML5         : > RAMLD,     PAGE = 1

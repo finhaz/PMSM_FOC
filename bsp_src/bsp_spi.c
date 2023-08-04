@@ -6,6 +6,8 @@
  */
 
 #include "bsp.h"
+#include "message_define.h"
+#define Float_message 1
 
 //FM25CL64的操作码定义
 //spi虽然配置为8bit收发，但是dsp是16位收发

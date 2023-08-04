@@ -5,27 +5,39 @@
  */
 #include "includes.h"
 
+
 void ReadEeprom(void)//初始化中，从25LC640中读取修正系数与调试参数44~118
 {
+
     int i;
+
     for(i=44;i<ParameterNumber;i++)
+//    for(i=44;i<76;i++)
     {
-#ifndef Float_message
-        Paramet[i] = Read_From_25LC640(i);
-#else
-        Paramet[i] = Read_From_25LC640F(i);
-#endif
+//#ifndef Float_message
+//        Paramet[i] = Read_From_25LC640(i);
+//#else
+//        Paramet[i] = Read_From_25LC640F(i);
+//#endif
+
+        Paramet[i]=Read_From_24C128F(i);
+
+        DELAY_US(100);
     }
+
+
 }
 void WrEeprom(void)//系统运行过程中，上位机有修改确认键按下时，需要将这一个数据存入对应的存储空间
 {
     if(FlagRegs.flagsystem.bit.eeprom_w == 1)//将修正参数和调试参数存入eeprom
     {
-#ifndef Float_message
-        Write_to_25LC640(SerialNumber, Paramet[SerialNumber]) ;
-#else
-        Write_to_25LC640F(SerialNumber, Paramet[SerialNumber]);
-#endif
+//#ifndef Float_message
+//        Write_to_25LC640(SerialNumber, Paramet[SerialNumber]) ;
+//#else
+//        Write_to_25LC640F(SerialNumber, Paramet[SerialNumber]);
+//#endif
+
+        Write_to_24C128F(SerialNumber, Paramet[SerialNumber]);
         FlagRegs.flagsystem.bit.eeprom_w = 0 ;
     }
 }

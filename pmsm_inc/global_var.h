@@ -3,7 +3,7 @@
 
 
 
-#include <filter_AVR_define.h>
+
 #include "math.h"
 
 #include "Adc_self_define.h"
@@ -20,6 +20,8 @@
 #include "spwm_define.h"
 #include "emf_obsever_define.h"
 #include "Encoder_solve_define.h"
+#include "filter_AVR_define.h"
+#include "adrc_define.h"
 
 //外部引用变量，此类变量在对应功能文件之外的区域应该只读，不可对其操作
 extern unsigned int Switchsystem;
@@ -179,7 +181,9 @@ extern PI_CONTROL A_IC_R;
 
 extern PR_CONTROL PR_Ialpha;
 extern PR_CONTROL PR_Ibeta;
-
+extern ADRC_Regulator ADRC_speed;
+extern ADRC_Regulator ADRC_id;
+extern ADRC_Regulator ADRC_iq;
 
 //坐标变换
 extern CLARKE_PARK Ialphabeta_to_Idq;//iα、iβ变成id、iq

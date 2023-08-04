@@ -52,66 +52,72 @@ void Initparameter(void)
     Switchsystem=0;//停机
     //系统参数数组初始化
     int i ;
-    for(i=0;i<44;i++)
+    for(i=0;i<ParameterNumber;i++)
     {
         Paramet[i]=0;
     }
 
-    vmax_current=3000;
-    max_voltage=2499;
-    min_voltage=1540;
-
-    iq_start_0=10;
-    sudu_max=200;
-
-
-
-    //速度环参数
-
-    kp_speed=0.4;
-    ki_speed=0.000001;
-
-    max_speed=25;
-    min_speed=-25;
-
-    //电流环参数
-//    kp_iq=0.108;
-//    ki_iq=0.002;
+//    vmax_current=3000;
+//    max_voltage=2499;
+//    min_voltage=1540;
 //
-//    kp_id=0.108;
-//    ki_id=0.002;
-
-    kp_iq=0.07;
-    ki_iq=0.0005;
-
-    kp_id=0.07;
-    ki_id=0.0005;
-
-    max_current=296.13;
-    min_current=-max_current;
-
-    weaking_start=1;
-    jia_jian_su=0;
-    id_ratio=10;
-
-    M=0.95;
-
+//    iq_start_0=10;
+//    sudu_max=200;
+//
+//
+//
+//    //速度环参数
+//
+////    kp_speed=0.04;
+////    ki_speed=0.001;
+//
+////    kp_speed=0.002;
+////    ki_speed=0.0001;
+//
+//    kp_speed=0.4;
+//    ki_speed=0.000001;
+//
+//    max_speed=25;
+//    min_speed=-25;
+//
+//    //电流环参数
+////    kp_iq=0.108;
+////    ki_iq=0.002;
+////
+////    kp_id=0.108;
+////    ki_id=0.002;
+//
+//    kp_iq=0.07;
+//    ki_iq=0.0005;
+//
+//    kp_id=0.07;
+//    ki_id=0.0005;
+//
+//    max_current=296.13;
+//    min_current=-max_current;
+//
+//    weaking_start=1;
+//    jia_jian_su=0;
+//    id_ratio=10;
+//
+//    M=0.95;
+//
 //    //直接给id指令
 //    kp_weak=0.001;
 //    ki_weak=0.0001;
 //    max_weak=0;
 //    min_weak=-18;
-
-    //超前角指令
-    kp_weak=0.001;
-    ki_weak=0.0001;
-    max_weak=0;
-    min_weak=-1.57;
-
-    id_mode=0;
-
-    Kw=200;
-    speed_tran=500;
+//
+////    //超前角指令
+////    kp_weak=0.001;
+////    ki_weak=0.0001;
+////    max_weak=0;
+////    min_weak=-1.57;
+//
+//    id_mode=0;
+//
+//    Kw=200;
+//    speed_tran=500;
 
 
 
@@ -128,6 +134,21 @@ void PIZero(void)
     A_IA_R.qdSum=0;
     A_IB_R.qdSum=0;
     A_IC_R.qdSum=0;
+
+    ADRC_speed.qdSum=0;
+    ADRC_speed.z1=0;
+    ADRC_speed.z2=0;
+
+    ADRC_id.qdSum=0;
+    ADRC_id.z1=0;
+    ADRC_id.z2=0;
+    ADRC_id.enable=0;
+
+    ADRC_iq.qdSum=0;
+    ADRC_iq.z1=0;
+    ADRC_iq.z2=0;
+    ADRC_iq.enable=0;
+
 }
 
 

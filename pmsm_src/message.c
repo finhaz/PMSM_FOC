@@ -7,8 +7,10 @@
  */
 #include "includes.h"
 
-#define set485 GpioDataRegs.GPBSET.bit.GPIO61= 1//发送使能
-#define clear485 GpioDataRegs.GPBCLEAR.bit.GPIO61= 1 //接收使能
+//#define set485 GpioDataRegs.GPBSET.bit.GPIO61= 1//发送使能
+//#define clear485 GpioDataRegs.GPBCLEAR.bit.GPIO61= 1 //接收使能
+#define set485 GpioDataRegs.GPBSET.bit.GPIO50= 1//发送使能
+#define clear485 GpioDataRegs.GPBCLEAR.bit.GPIO50= 1 //接收使能
 #define sci_buffer ScicRegs.SCIRXBUF.bit.RXDT
 
 //通讯私有变量，外界不可随意读取和更改
@@ -102,11 +104,19 @@ void TXdeal(void)
         FData_get.bit.MEM2=RC_DataBUF[3];
         FData_get.bit.MEM3=RC_DataBUF[4];
         FData_get.bit.MEM4=RC_DataBUF[5];
-        Paramet[SerialNumber]=FData_get.all;
+        if(Paramet[SerialNumber]!=FData_get.all)//避免无意义的EERPOM重复擦写
+        {
+            FlagRegs.flagsystem.bit.eeprom_w = 1;
+            Paramet[SerialNumber]=FData_get.all;
+        }
 #else
         Data_get.bit.MEM1=RC_DataBUF[2];
         Data_get.bit.MEM2=RC_DataBUF[3];
-        Paramet[SerialNumber]=Data_get.all;
+        if(Paramet[SerialNumber]!=Data_get.all)
+        {
+            FlagRegs.flagsystem.bit.eeprom_w = 1;
+            Paramet[SerialNumber]=Data_get.all;
+        }
 #endif
 
         FlagRegs.flagsystem.bit.eeprom_w = 1;

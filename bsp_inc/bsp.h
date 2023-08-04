@@ -9,10 +9,13 @@
 #include "bsp_sci.h"
 #include "bsp_xint.h"
 #include "bsp_para.h"
+//#include "bsp_iic_eeprom.h"
+#include "bsp_iic_24c128.h"
 
 interrupt void scirxintab_isr(void);
 interrupt void xint1_isr(void);
 interrupt void adca1_interrupt_isr(void);
+interrupt void timer0_isr(void);
 
 void InitBoardGpio(void);
 void ConfigurePIE(void);

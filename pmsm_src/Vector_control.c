@@ -5,6 +5,8 @@
 
 #include "includes.h"
 
+#define ADRC_CURRENT 1
+
 //角度补偿
 void angle_compensate(void)
 {
@@ -31,83 +33,7 @@ void angle_compensate(void)
 }
 
 
-//包含电流环、启动，位置观测计算，转速估测计算
-//电流环控制
-void current_loop(void)
-{
 
-//-----------------电流环------------------------------------------------
-    park_calc(&Ialphabeta_to_Idq); //得到反馈量id、iq
-//----------------pi参数----------------------------------------
-
-//    if(FlagRegs.flagsystem.bit.jieou_inuse_sign==0&&speed_cankao>(speed_tran+500))
-//    {
-//        A_Id_R.qdSum=A_Id_R.qOut+jiaosudu1_asr*Ls*A_Iq_R.qInRef;
-//        A_Iq_R.qdSum=A_Iq_R.qOut-jiaosudu1_asr*(Ls*A_Id_R.qInRef+fluxm);
-//        FlagRegs.flagsystem.bit.jieou_inuse_sign=1;
-//    }
-
-    if(FlagRegs.flagsystem.bit.jieou_inuse_sign==0&&speed_cankao>(speed_tran+500))
-    {
-        A_Id_R.qdSum=A_Id_R.qOut+jiaosudu1_asr*Ls*A_Iq_R.qInMeas ;
-        A_Iq_R.qdSum=A_Iq_R.qOut-jiaosudu1_asr*(Ls*A_Id_R.qInMeas +fluxm);
-        FlagRegs.flagsystem.bit.jieou_inuse_sign=1;
-    }
-
-	//给定q轴调节
-	A_Iq_R.qKp=kp_iq;
-	A_Iq_R.qKi=ki_iq;
-	A_Iq_R.qOutMax=max_current;
-	A_Iq_R.qOutMin=min_current;
-	//给定d轴调节
-	A_Id_R.qKp=kp_id;
-	A_Id_R.qKi=ki_id;
-	A_Id_R.qOutMax=max_current;
-	A_Id_R.qOutMin=min_current;
-
-
-    A_Iq_R.qInMeas=Ialphabeta_to_Idq.Qs;//q反馈电流
-    A_Id_R.qInMeas=Ialphabeta_to_Idq.Ds;//d反馈电流
-
-//	//滤波后电流处理
-//    id_filtrate.X_in=Ialphabeta_to_Idq.Ds;
-//    FILTRATE_CALC(&id_filtrate);
-//
-//    iq_filtrate.X_in=Ialphabeta_to_Idq.Qs;
-//    FILTRATE_CALC(&iq_filtrate);
-
-//    A_Iq_R.qInMeas=iq_filtrate.Y ;//q反馈电流
-//    A_Id_R.qInMeas=id_filtrate.Y;//d反馈电流
-
-	PI_CONTROL_CALC(&A_Iq_R);//输出q轴调制电压Uq
-	PI_CONTROL_CALC(&A_Id_R);//输出d轴调制电压Ud
-
-    if(FlagRegs.flagsystem.bit.jieou_inuse_sign==1)
-    {
-        Udq_to_Ualphabeta.Ds=A_Id_R.qOut-jiaosudu1_asr*Ls*A_Iq_R.qInRef;
-        Udq_to_Ualphabeta.Qs=A_Iq_R.qOut+jiaosudu1_asr*(Ls*A_Id_R.qInRef+fluxm);
-        if(Udq_to_Ualphabeta.Ds>max_current)
-            Udq_to_Ualphabeta.Ds=max_current;
-        if(Udq_to_Ualphabeta.Ds<min_current)
-            Udq_to_Ualphabeta.Ds=min_current;
-
-        if(Udq_to_Ualphabeta.Qs>max_current)
-            Udq_to_Ualphabeta.Qs=max_current;
-        if(Udq_to_Ualphabeta.Qs<min_current)
-            Udq_to_Ualphabeta.Qs=min_current;
-    }
-    else
-    {
-        Udq_to_Ualphabeta.Ds=A_Id_R.qOut;
-        Udq_to_Ualphabeta.Qs=A_Iq_R.qOut;
-    }
-
-    //坐标变换得到调制电压Uα、Uβ
-
-	ipark_calc(&Udq_to_Ualphabeta);//输出Uα、Uβ
-
-
-}
 
 
 //IF开环起动
@@ -126,6 +52,8 @@ void OpenStartUp_angle(void)
 //	Udq_to_Ualphabeta.Angle =thetam_given;
 	A_Iq_R.qInRef=iq_start_0;    //给定q轴电流
 	A_Id_R.qInRef=0;//给定d轴电流
+    ADRC_iq.qInRef=iq_start_0;//给定
+    ADRC_id.qInRef=0;//给定
 }
 
 //-------------------------预定位------------------------------------------------------------------------
@@ -157,6 +85,9 @@ void predir(void)
 //------------------预定位控制器入口参数------------------------------------------------------
 	A_Iq_R.qInRef=iq_start_0;//给定
 	A_Id_R.qInRef=0;//给定
+
+	ADRC_iq.qInRef=iq_start_0;//给定
+    ADRC_id.qInRef=0;//给定
 }
 
 //速度斜坡
@@ -200,9 +131,6 @@ void id_setzero(void)
 void trans(void)
 {
     CLARKE_PARK Utran=CLARKE_PARK_DEFAULTS;
-//    test_Iq=iq_start_0*cos(delt_theta);
-//    test_Id=iq_start_0*sin(delt_theta);
-//    test_Te=1.5*2*0.024258*test_Iq;
 	if(speed_cankao>=speed_tran&&FlagRegs.flagsystem.bit.speed_loop_sign==0)//切换阶段开启
 	{
 	    FlagRegs.flagsystem.bit.speed_loop_sign=1;
@@ -211,7 +139,12 @@ void trans(void)
 		A_Iq_R.qInRef=iq_start_0;    //给定q轴电流
 		A_Id_R.qInRef=0;//_IQ(0);         //给定d轴电流
 		Ialphabeta_to_Idq.Angle=thetam_given;//变换角度
-		current_loop();
+
+#ifdef ADRC_CURRENT
+        current_loop_adrc();
+#else
+        current_loop();
+#endif
 
 	    //用于切换时候使用，保持切换前后Uα、Uβ不变
 		Utran.Alpha=Udq_to_Ualphabeta.Alpha;
@@ -226,8 +159,13 @@ void trans(void)
 		iq_start=iq_start_0*cos(delt_theta);
 		id_start=iq_start_0*sin(delt_theta);
 		ASR.qdSum=iq_start;
+		ADRC_speed.qdSum=iq_start*ADRC_speed.b/ADRC_speed.qKi;
 		A_Iq_R.qdSum=Utran.Qs;
 		A_Id_R.qdSum=Utran.Ds;
+
+		ADRC_iq.qdSum=Utran.Qs*ADRC_iq.b/ADRC_iq.qKi;
+		ADRC_id.qdSum=Utran.Ds*ADRC_id.b/ADRC_id.qKi;
+
 		iq_fankui=iq_start;
 	}
 }
@@ -284,26 +222,6 @@ void set_stop(void)
 }
 
 
-//速度环控制
-void speed_loop(void)
-{
-    stage_asr++;
-	if(stage_asr==50)//速度环
-	{
-	    stage_asr=0;
-
-		ASR.qInMeas=jiaosudu1_asr;
-		ASR.qInRef=speed_cankao;
-		ASR.qKp=kp_speed;//_IQ(0.0025);//速度环积分系数_IQ(0.1);
-		ASR.qKi=ki_speed;//_IQ(0.00025);//_IQ(0.001);//速度环比例系数_IQ(0.0005)
-		ASR.qOutMax=max_speed;
-		ASR.qOutMin=min_speed;
-		PI_CONTROL_CALC(&ASR);//电流环给定
-	}
-
-	iq_fankui=ASR.qOut;//给定q轴电流
-}
-
 
 
 
@@ -340,12 +258,12 @@ void Sensorless_control(void)
             //jiaosudu1_asr=We_Filter2.y;
             //theta=PLL_e.theta_sgn;
 
-            ////位置传感器反馈
-            //与无位置的启动策略类似，这里预定位的目的是将电机尽可能定位到机械零点
-            //然后EQEP在IF阶段用index检测到该零点与编码器零点的误差，从而实现初始预定位
-            //encoder_solver();
-            //jiaosudu1_asr=encoder_cal.w_mech*pn;
-            //theta=encoder_cal.theta_mech*pn;
+//            //位置传感器反馈
+//            //与无位置的启动策略类似，这里预定位的目的是将电机尽可能定位到机械零点
+//            //然后EQEP在IF阶段用index检测到该零点与编码器零点的误差，从而实现初始预定位
+//            encoder_solver();
+//            jiaosudu1_asr=encoder_cal.w_mech*pn;
+//            theta=encoder_cal.theta_mech*pn;
 
 
             trans();//无位置切换
@@ -353,11 +271,12 @@ void Sensorless_control(void)
             {
                 FlagRegs.flagsystem.bit.if_start=1;//if启动结束，切换为无位置闭环
                 id_setzero();//-----------------------电流给定值调节为0---------------------------------------
-                speed_loop();//--速度环+电压外环10ms-
+                //speed_loop();//--速度环+电压外环10ms-
+                speed_loop_adrc();
 
                 //弱磁模块
-                //weak_loop();
-                weak_loop_y();
+                weak_loop();
+                //weak_loop_y();
 
                 angle_compensate();//角度补偿
                 if(jia_jian_su==1)//允许负力矩停机
@@ -366,6 +285,10 @@ void Sensorless_control(void)
                 }
                 A_Iq_R.qInRef=iq_fankui;
                 A_Id_R.qInRef=id_fankui;
+
+                ADRC_iq.qInRef=iq_fankui;
+                ADRC_id.qInRef=id_fankui;
+
                 Ialphabeta_to_Idq.Angle =theta_buchan;//变换角度
                 Udq_to_Ualphabeta.Angle=theta_buchan1;
             }
@@ -374,9 +297,13 @@ void Sensorless_control(void)
         {
            predir();
         }
-        //-----------控制器----------------------------------------------------
-        //主要是电流环调节，输入参数为pi参数，电流给定、
-        current_loop();//输入参数主要是dq电流给定，PI参数，角度
+
+        //电流环调节
+#ifdef ADRC_CURRENT
+        current_loop_adrc();
+#else
+        current_loop();
+#endif
         //current_loop_rogi();
     }
     else if( FlagRegs.flagsystem.bit.free_stop_sign==1)

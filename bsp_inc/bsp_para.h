@@ -28,12 +28,12 @@
 ////10K
 //#define Prd 7500
 //#define T 0.0001
-//20k
-#define Prd 3750
-#define T 0.00005
-////30k
-//#define Prd 2500
-//#define T 0.000033
+////20k
+//#define Prd 3750
+//#define T 0.00005
+//30k
+#define Prd 2500
+#define T 0.000033
 ////40k
 //#define Prd 1875
 //#define T 0.000025

@@ -28,7 +28,7 @@ interrupt void xint1_isr(void)
 interrupt void adca1_interrupt_isr(void)
 {
 
-	//GpioDataRegs.GPADAT.bit.GPIO31=1;
+	GpioDataRegs.GPADAT.bit.GPIO24=1;
 	Adcread();//采样子程序
 	Adcdeal();
 
@@ -65,7 +65,6 @@ interrupt void adca1_interrupt_isr(void)
 
 			Sensorless_control();
 
-//			Sensor_control();
 
             //---------------------根据调制方式计算比较寄存器值-----------------------------------
 
@@ -152,5 +151,14 @@ interrupt void adca1_interrupt_isr(void)
     AdcRegs.ADCTRL2.bit.RST_SEQ1=1;
     AdcRegs.ADCST.bit.INT_SEQ1_CLR=1;//make sure INT1 flag is cleared
     PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
-	//GpioDataRegs.GPADAT.bit.GPIO31=0;
+	GpioDataRegs.GPADAT.bit.GPIO24=0;
+}
+
+
+interrupt void timer0_isr(void)
+{
+
+    CpuTimer0Regs.TCR.bit.TIF=1;
+    CpuTimer0Regs.TCR.bit.TRB=1;
+    PieCtrlRegs.PIEACK.all = PIEACK_GROUP1;
 }

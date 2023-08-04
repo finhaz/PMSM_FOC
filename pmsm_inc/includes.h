@@ -24,5 +24,17 @@
 #include "Encoder_solve.h"
 #include "mras.h"
 #include "ROGI.h"
+#include "pid.h"
+#include "park_clark.h"
+#include "var_init.h"
+#include "emf_observer.h"
+#include "spwm.h"
+#include "Svpwm_2L.h"
+#include "IIRFilter.h"
+#include "ABC_park.h"
+#include "filter_windows.h"
+#include "Weak_control.h"
+#include "Speed_control.h"
+#include "adrc.h"
 
 #endif /* INCLUDES_H_ */

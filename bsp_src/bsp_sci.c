@@ -12,7 +12,36 @@
 //#define SCI_PRD         ((LSPCLK_FREQ/(SCI_FREQ*8))-1)
 //BRR =SCI_PRD;
 
+void InitSciGpio_a(void)
+{
+    EALLOW;
 
+    //
+    // Enable internal pull-up for the selected pins
+    // Pull-ups can be enabled or disabled disabled by the user.
+    // This will enable the pullups for the specified pins.
+    //
+    GpioCtrlRegs.GPBPUD.bit.GPIO36 = 0;  // Enable pull-up for GPIO36 (SCIRXDA)
+    GpioCtrlRegs.GPBPUD.bit.GPIO35 = 0;  // Enable pull-up for GPIO35 (SCITXDA)
+
+    //
+    // Set qualification for selected pins to asynch only
+    // Inputs are synchronized to SYSCLKOUT by default.
+    // This will select asynch (no qualification) for the selected pins.
+    //
+    GpioCtrlRegs.GPBQSEL1.bit.GPIO36 = 3;  // Asynch input GPIO36 (SCIRXDA)
+
+    //
+    // Configure SCI-A pins using GPIO regs
+    // This specifies which of the possible GPIO pins will be SCI functional
+    // pins.
+    //
+    GpioCtrlRegs.GPBMUX1.bit.GPIO36 = 1;   // Configure GPIO36 to SCIRXDA
+    GpioCtrlRegs.GPBMUX1.bit.GPIO35 = 1;   // Configure GPIO35 to SCITXDA
+
+
+    EDIS;
+}
 
 void ConfigureSci(void)
 {
